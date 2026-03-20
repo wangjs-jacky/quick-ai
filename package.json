@@ -2,7 +2,7 @@
   "name": "quick-ai",
   "displayName": "Quick AI",
   "description": "Quick access to Warp terminal, Claude CLI, and Opencode CLI",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "jackywjs",
   "license": "MIT",
   "repository": {
@@ -39,6 +39,21 @@
         "command": "quickOpencodeCommand",
         "title": "Quick Opencode",
         "category": "Quick AI"
+      },
+      {
+        "command": "quickCodexCommand",
+        "title": "Quick Codex",
+        "category": "Quick AI"
+      },
+      {
+        "command": "quickGeminiCommand",
+        "title": "Quick Gemini",
+        "category": "Quick AI"
+      },
+      {
+        "command": "quickCopilotCommand",
+        "title": "Quick Copilot",
+        "category": "Quick AI"
       }
     ],
     "keybindings": [
@@ -60,7 +75,7 @@
       "properties": {
         "quickAI.showWarpIcon": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "在状态栏显示 Warp 图标"
         },
         "quickAI.showClaudeIcon": {
@@ -108,6 +123,36 @@
           "type": "string",
           "default": "opencode",
           "description": "Opencode CLI 命令（不含换行符）"
+        },
+        "quickAI.showCodexIcon": {
+          "type": "boolean",
+          "default": true,
+          "description": "在状态栏显示 Codex 图标"
+        },
+        "quickAI.showGeminiIcon": {
+          "type": "boolean",
+          "default": false,
+          "description": "在状态栏显示 Gemini 图标"
+        },
+        "quickAI.showCopilotIcon": {
+          "type": "boolean",
+          "default": false,
+          "description": "在状态栏显示 Copilot 图标"
+        },
+        "quickAI.codexCommand": {
+          "type": "string",
+          "default": "codex -c model_reasoning_effort=\"high\" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary=\"detailed\" -c model_supports_reasoning_summaries=true",
+          "description": "Codex CLI 命令（不含换行符）"
+        },
+        "quickAI.geminiCommand": {
+          "type": "string",
+          "default": "gemini --yolo",
+          "description": "Gemini CLI 命令（不含换行符）"
+        },
+        "quickAI.copilotCommand": {
+          "type": "string",
+          "default": "copilot --allow-all",
+          "description": "Copilot CLI 命令（不含换行符）"
         },
         "quickAI.customCommands": {
           "type": "array",

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.6] - 2026-03-20
+
+### Added
+
+- 新增 Codex、Gemini、Copilot 三款 AI 编程工具支持
+- 每个工具均可通过配置开启/关闭状态栏图标（`showCodexIcon`、`showGeminiIcon`、`showCopilotIcon`）
+- 每个工具支持自定义命令配置（`codexCommand`、`geminiCommand`、`copilotCommand`）
+- 默认仅显示 Claude、Opencode、Codex 图标，Warp、Gemini、Copilot 默认隐藏
+
 ## [0.0.5] - 2025-02-21
 
 ### Fixed
@@ -41,6 +50,7 @@ All notable changes to this project will be documented in this file.
 - 可配置图标样式（仅图标或图标+文字）
 - 可配置终端位置（面板或编辑器标签页）
 
+[0.0.6]: https://github.com/wangjs-jacky/quick-ai/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/wangjs-jacky/quick-ai/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/wangjs-jacky/quick-ai/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/wangjs-jacky/quick-ai/compare/v0.0.2...v0.0.3

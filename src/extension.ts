@@ -14,6 +14,9 @@ interface CustomCommand {
 let warpStatusBarItem: vscode.StatusBarItem | undefined;
 let claudeStatusBarItem: vscode.StatusBarItem | undefined;
 let opencodeStatusBarItem: vscode.StatusBarItem | undefined;
+let codexStatusBarItem: vscode.StatusBarItem | undefined;
+let geminiStatusBarItem: vscode.StatusBarItem | undefined;
+let copilotStatusBarItem: vscode.StatusBarItem | undefined;
 let customStatusBarItems: vscode.StatusBarItem[] = [];
 let customCommandDisposables: vscode.Disposable[] = [];
 
@@ -47,6 +50,27 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 	context.subscriptions.push(quickOpencodeCommand);
 
+	// 注册 Quick Codex 命令
+	const quickCodexCommand = vscode.commands.registerCommand(
+		'quickCodexCommand',
+		executeQuickCodex
+	);
+	context.subscriptions.push(quickCodexCommand);
+
+	// 注册 Quick Gemini 命令
+	const quickGeminiCommand = vscode.commands.registerCommand(
+		'quickGeminiCommand',
+		executeQuickGemini
+	);
+	context.subscriptions.push(quickGeminiCommand);
+
+	// 注册 Quick Copilot 命令
+	const quickCopilotCommand = vscode.commands.registerCommand(
+		'quickCopilotCommand',
+		executeQuickCopilot
+	);
+	context.subscriptions.push(quickCopilotCommand);
+
 	// 创建并显示状态栏图标
 	createStatusBarItems(context);
 
@@ -69,13 +93,19 @@ export function activate(context: vscode.ExtensionContext) {
 function getConfig() {
 	const config = vscode.workspace.getConfiguration('quickAI');
 	return {
-		showWarpIcon: config.get<boolean>('showWarpIcon', true),
+		showWarpIcon: config.get<boolean>('showWarpIcon', false),
 		showClaudeIcon: config.get<boolean>('showClaudeIcon', true),
 		showOpencodeIcon: config.get<boolean>('showOpencodeIcon', true),
+		showCodexIcon: config.get<boolean>('showCodexIcon', true),
+		showGeminiIcon: config.get<boolean>('showGeminiIcon', false),
+		showCopilotIcon: config.get<boolean>('showCopilotIcon', false),
 		iconStyle: config.get<string>('iconStyle', 'icon+text'),
 		terminalLocation: config.get<string>('terminalLocation', 'panel') as 'panel' | 'editor',
 		claudeCommand: config.get<string>('claudeCommand', 'claude --dangerously-skip-permissions'),
 		opencodeCommand: config.get<string>('opencodeCommand', 'opencode'),
+		codexCommand: config.get<string>('codexCommand', 'codex -c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true'),
+		geminiCommand: config.get<string>('geminiCommand', 'gemini --yolo'),
+		copilotCommand: config.get<string>('copilotCommand', 'copilot --allow-all'),
 		customCommands: config.get<CustomCommand[]>('customCommands', [])
 	};
 }
@@ -139,9 +169,51 @@ function createStatusBarItems(context: vscode.ExtensionContext): void {
 		context.subscriptions.push(warpStatusBarItem);
 	}
 
+	// 4. Codex 状态栏图标
+	if (config.showCodexIcon) {
+		codexStatusBarItem = vscode.window.createStatusBarItem(
+			'quickAI.codexStatusBar',
+			vscode.StatusBarAlignment.Right,
+			96
+		);
+		codexStatusBarItem.text = getStatusBarText('beaker', 'Codex');
+		codexStatusBarItem.tooltip = 'Quick Codex CLI';
+		codexStatusBarItem.command = 'quickCodexCommand';
+		codexStatusBarItem.show();
+		context.subscriptions.push(codexStatusBarItem);
+	}
+
+	// 5. Gemini 状态栏图标
+	if (config.showGeminiIcon) {
+		geminiStatusBarItem = vscode.window.createStatusBarItem(
+			'quickAI.geminiStatusBar',
+			vscode.StatusBarAlignment.Right,
+			95
+		);
+		geminiStatusBarItem.text = getStatusBarText('sparkle', 'Gemini');
+		geminiStatusBarItem.tooltip = 'Quick Gemini CLI';
+		geminiStatusBarItem.command = 'quickGeminiCommand';
+		geminiStatusBarItem.show();
+		context.subscriptions.push(geminiStatusBarItem);
+	}
+
+	// 6. Copilot 状态栏图标
+	if (config.showCopilotIcon) {
+		copilotStatusBarItem = vscode.window.createStatusBarItem(
+			'quickAI.copilotStatusBar',
+			vscode.StatusBarAlignment.Right,
+			94
+		);
+		copilotStatusBarItem.text = getStatusBarText('github', 'Copilot');
+		copilotStatusBarItem.tooltip = 'Quick Copilot CLI';
+		copilotStatusBarItem.command = 'quickCopilotCommand';
+		copilotStatusBarItem.show();
+		context.subscriptions.push(copilotStatusBarItem);
+	}
+
 	console.log('状态栏图标已创建，配置:', config);
 
-	// 4. 创建自定义命令状态栏图标
+	// 7. 创建自定义命令状态栏图标
 	createCustomStatusBarItems(context, config.customCommands);
 }
 
@@ -231,6 +303,18 @@ function disposeStatusBarItems(): void {
 	if (opencodeStatusBarItem) {
 		opencodeStatusBarItem.dispose();
 		opencodeStatusBarItem = undefined;
+	}
+	if (codexStatusBarItem) {
+		codexStatusBarItem.dispose();
+		codexStatusBarItem = undefined;
+	}
+	if (geminiStatusBarItem) {
+		geminiStatusBarItem.dispose();
+		geminiStatusBarItem = undefined;
+	}
+	if (copilotStatusBarItem) {
+		copilotStatusBarItem.dispose();
+		copilotStatusBarItem = undefined;
 	}
 	// 清理自定义命令状态栏项
 	disposeCustomStatusBarItems();
@@ -360,6 +444,45 @@ async function executeQuickOpencode(): Promise<void> {
 	terminal.sendText(config.opencodeCommand + '\n');
 
 	// 显示并聚焦终端
+	terminal.show();
+}
+
+/**
+ * 执行 Quick Codex 命令
+ */
+async function executeQuickCodex(): Promise<void> {
+	const config = getConfig();
+	const terminal = await createTerminal('Quick Codex');
+	if (!terminal) {
+		return;
+	}
+	terminal.sendText(config.codexCommand + '\n');
+	terminal.show();
+}
+
+/**
+ * 执行 Quick Gemini 命令
+ */
+async function executeQuickGemini(): Promise<void> {
+	const config = getConfig();
+	const terminal = await createTerminal('Quick Gemini');
+	if (!terminal) {
+		return;
+	}
+	terminal.sendText(config.geminiCommand + '\n');
+	terminal.show();
+}
+
+/**
+ * 执行 Quick Copilot 命令
+ */
+async function executeQuickCopilot(): Promise<void> {
+	const config = getConfig();
+	const terminal = await createTerminal('Quick Copilot');
+	if (!terminal) {
+		return;
+	}
+	terminal.sendText(config.copilotCommand + '\n');
 	terminal.show();
 }
 
